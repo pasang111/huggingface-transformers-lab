@@ -1,26 +1,29 @@
 # Hugging Face Transformers Lab
 
-Learn Hugging Face Transformers through practical Python projects, starting with pretrained model inference and progressing to tokenization, summarization, question answering, and fine-tuning.
+I'm learning Hugging Face Transformers and building things as I go.
 
-## Setup (Windows PowerShell)
+I made this repo to keep my code, experiments, and notes in one place instead of having everything scattered across different folders.
 
-```powershell
-py -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --upgrade pip
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe projects/01_sentiment_analyzer/app.py
+### What I'm learning
+
+- How pretrained models work
+- Tokenizers and tokens
+- Running models with the Transformers library
+- Text generation, summarization, and question answering
+- Fine-tuning models once I understand the basics
+
+### Setup
+
+I'm using Python, VS Code, and a virtual environment.
+
+Install the dependencies with:
+
+```bash
+python -m pip install -r requirements.txt
 ```
 
-PowerShell activation is optional; using `.venv\Scripts\python.exe` avoids execution-policy issues.
+### Progress
 
-## Roadmap
-1. Pipeline basics and sentiment analysis
-2. Tokenizers and token IDs
-3. Direct model inference with AutoTokenizer and AutoModel
-4. Text summarization
-5. Document question answering
-6. Fine-tuning a text classifier
+I'm starting with the basics and will add projects as I learn. Some folders are just placeholders for things I plan to try later.
 
-## Resources
-- https://huggingface.co/docs/transformers
-- https://huggingface.co/learn
+This repo is a work in progress.
