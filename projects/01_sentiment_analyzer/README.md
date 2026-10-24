@@ -1,9 +1,29 @@
-# Sentiment Analyzer
+# Hugging Face Transformers Lab
 
-Run from the repository root:
+I'm learning Hugging Face Transformers and building things as I go.
 
-```powershell
-.\.venv\Scripts\python.exe projects/01_sentiment_analyzer/app.py
+I made this repo to keep my code, experiments, and notes in one place instead of having everything scattered across different folders.
+
+### What I'm learning
+
+- How pretrained models work
+- Tokenizers and tokens
+- Running models with the Transformers library
+- Text generation, summarization, and question answering
+- Fine-tuning models once I understand the basics
+
+### Setup
+
+I'm using Python, VS Code, and a virtual environment.
+
+Install the dependencies with:
+
+```bash
+python -m pip install -r requirements.txt
 ```
 
-This uses a pretrained model; it does not train a model. The first run downloads model files and needs internet access. Try adding your own sentences and observe the labels and scores. Scores are not guarantees, and the model may struggle with sarcasm or languages other than English.
+### Progress
+
+I'm starting with the basics and will add projects as I learn. Some folders are just placeholders for things I plan to try later.
+
+This repo is a work in progress.
