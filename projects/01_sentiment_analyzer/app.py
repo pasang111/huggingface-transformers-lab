@@ -1,61 +1,124 @@
-from transformers import pipeline  # Import pipeline from transformers library
+
+from transformers import pipeline
+import torch
 
 
-def load_model():  # Function to load the sentiment analysis model
-    classifier = pipeline(  # Create a sentiment analysis pipeline
-        task="sentiment-analysis",  # Specify the task as sentiment analysis
-        model="distilbert/distilbert-base-uncased-finetuned-sst-2-english"  # Select the pretrained model
+def load_model():
+    device = 0 if torch.cuda.is_available() else -1
+
+    classifier = pipeline(
+        task="sentiment-analysis",
+        model="distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+        device=device
     )
-    return classifier  # Return the loaded model
+
+    return classifier
 
 
-def predict_sentiment(classifier, texts):  # Function to predict sentiment
-    predictions = classifier(texts, batch_size=8)  # Predict sentiment for all texts in batches of 8
-    return predictions  # Return the prediction results
+def predict_sentiment(classifier, texts):
+    if not texts:
+        return []
+
+    if isinstance(texts, str):
+        texts = [texts]
+
+    predictions = classifier(
+        texts,
+        batch_size=8,
+        truncation=True
+    )
+
+    return predictions
 
 
-def display_results(texts, predictions):  # Function to display prediction results
-    for text, result in zip(texts, predictions):  # Loop through texts and their predictions
-        label = result["label"]  # Get the sentiment label (POSITIVE or NEGATIVE)
-        confidence = result["score"]  # Get the confidence score
+# CMR: Confidence-Based Model Reliability
+def calculate_cmr(predictions):
+    if not predictions:
+        return 0, 0, 0
 
-        print("=" * 60)  # Print a separator line
-        print(f"Text       : {text}")  # Display the input text
-        print(f"Sentiment  : {label}")  # Display the predicted sentiment
-        print(f"Confidence : {confidence:.2%}")  # Display confidence as a percentage
+    total = len(predictions)
 
-        if confidence >= 0.90:  # Check if confidence is 90% or higher
-            print("Interpretation: High model confidence")  # Display high confidence
-        elif confidence >= 0.70:  # Check if confidence is 70% or higher
-            print("Interpretation: Moderate model confidence")  # Display moderate confidence
-        else:  # If confidence is below 70%
-            print("Interpretation: Lower model confidence")  # Display lower confidence
+    high_confidence = sum(
+        1 for p in predictions if p["score"] >= 0.90
+    )
 
-    print("=" * 60)  # Print the final separator line
+    moderate_confidence = sum(
+        1 for p in predictions if 0.70 <= p["score"] < 0.90
+    )
+
+    low_confidence = sum(
+        1 for p in predictions if p["score"] < 0.70
+    )
+
+    cmr = (
+        sum(p["score"] for p in predictions) / total
+    ) * 100
+
+    return cmr, high_confidence, moderate_confidence, low_confidence
 
 
-def main():  # Main function of the program
-    print("Loading Transformer model...")  # Display loading message
+def display_results(texts, predictions):
+    print("\nSENTIMENT ANALYSIS RESULTS")
+    print("=" * 60)
 
-    classifier = load_model()  # Load the sentiment analysis model
+    for text, result in zip(texts, predictions):
 
-    print("Model loaded successfully!\n")  # Display success message
+        label = result["label"]
+        confidence = result["score"]
 
-    examples = [  # Create a list of example sentences
-        "I really enjoyed learning about transformers today.",  # Positive sentence
-        "This was confusing and frustrating.",  # Negative sentence
-        "The package arrived yesterday.",  # Neutral-sounding sentence
-        "The movie was absolutely fantastic!",  # Positive sentence
-        "I am disappointed with the customer service.",  # Negative sentence
-        "The weather is nice today.",  # Positive sentence
-        "Artificial intelligence is changing the world.",  # Neutral or positive-sounding sentence
-        "I hate waiting for hours."  # Negative sentence
+        if confidence >= 0.90:
+            interpretation = "High confidence"
+        elif confidence >= 0.70:
+            interpretation = "Moderate confidence"
+        else:
+            interpretation = "Low confidence"
+
+        print(f"\nText       : {text}")
+        print(f"Sentiment  : {label}")
+        print(f"Confidence : {confidence:.2%}")
+        print(f"Analysis   : {interpretation}")
+
+    # Calculate CMR
+    cmr, high, moderate, low = calculate_cmr(predictions)
+
+    print("\n" + "=" * 60)
+    print("CMR (CONFIDENCE-BASED MODEL RELIABILITY)")
+    print("=" * 60)
+
+    print(f"Overall CMR       : {cmr:.2f}%")
+    print(f"High Confidence   : {high}")
+    print(f"Moderate Confidence: {moderate}")
+    print(f"Low Confidence    : {low}")
+
+    print("=" * 60)
+
+
+def main():
+    examples = [
+        "I really enjoyed learning about transformers today.",
+        "This was confusing and frustrating.",
+        "The package arrived yesterday.",
+        "The movie was absolutely fantastic!",
+        "I am disappointed with the customer service.",
+        "The weather is nice today.",
+        "Artificial intelligence is changing the world.",
+        "I hate waiting for hours."
     ]
 
-    predictions = predict_sentiment(classifier, examples)  # Predict sentiment for all examples
+    try:
+        print("Loading sentiment analysis model...")
 
-    display_results(examples, predictions)  # Display all prediction results
+        classifier = load_model()
+
+        print("Model loaded successfully!")
+
+        predictions = predict_sentiment(classifier, examples)
+
+        display_results(examples, predictions)
+
+    except Exception as error:
+        print(f"Error: {error}")
 
 
-if __name__ == "__main__":  # Check if this file is running directly
-    main()  # Call the main function to execute the program
+if __name__ == "__main__":
+    main()
