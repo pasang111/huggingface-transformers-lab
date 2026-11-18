@@ -1,15 +1,14 @@
-python
-
-```python
-
+# Import required libraries
 from dataclasses import dataclass
 from typing import Dict, Optional
 import os
 import sys
 
+# Model configuration
 MODEL_NAME = "facebook/bart-large-cnn"
 MAX_INPUT_TOKENS = 1024
 
+# Settings used when generating summaries
 GENERATION_CONFIG = {
     "do_sample": False,
     "num_beams": 4,
@@ -19,6 +18,7 @@ GENERATION_CONFIG = {
     "truncation": True
 }
 
+# Available summary lengths
 SUMMARY_OPTIONS = {
     "1": {
         "name": "Short",
@@ -40,6 +40,8 @@ SUMMARY_OPTIONS = {
     }
 }
 
+
+# Define terminal colors
 class Colors:
     RESET = "\033[0m"
     RED = "\033[91m"
@@ -53,6 +55,7 @@ class Colors:
     DIM = "\033[2m"
 
 
+# Print a message with color and optional bold text
 def print_message(
     message: str,
     color: str = Colors.RESET,
@@ -62,28 +65,34 @@ def print_message(
     print(f"{style}{color}{message}{Colors.RESET}")
 
 
+# Display a centered title
 def print_header(title: str, width: int = 65) -> None:
     print("\n" + "=" * width)
     print_message(title.center(width), Colors.CYAN, bold=True)
     print("=" * width)
 
 
+# Display a success message
 def print_success(message: str) -> None:
     print_message(f"[SUCCESS] {message}", Colors.GREEN)
 
 
+# Display an error message
 def print_error(message: str) -> None:
     print_message(f"[ERROR] {message}", Colors.RED)
 
 
+# Display a warning message
 def print_warning(message: str) -> None:
     print_message(f"[WARNING] {message}", Colors.YELLOW)
 
 
+# Display an information message
 def print_info(message: str) -> None:
     print_message(f"[INFO] {message}", Colors.BLUE)
 
 
+# Display the available summary length options
 def display_summary_options() -> None:
     print_header("SUMMARY LENGTH OPTIONS")
 
@@ -92,13 +101,16 @@ def display_summary_options() -> None:
             f"{Colors.GREEN}{key}.{Colors.RESET} "
             f"{Colors.BOLD}{option['name']}{Colors.RESET}"
         )
+
         print(f"   {option['description']}")
+
         print(
             f"   Length: {option['min_length']}-"
             f"{option['max_length']} tokens\n"
         )
 
 
+# Get the selected summary configuration
 def get_summary_config(choice: str) -> dict:
     if choice not in SUMMARY_OPTIONS:
         raise ValueError(
@@ -108,6 +120,7 @@ def get_summary_config(choice: str) -> dict:
     return SUMMARY_OPTIONS[choice]
 
 
+# Check whether the input text is valid
 def validate_text(text: str) -> str:
     if not isinstance(text, str):
         raise TypeError("Input must be a string.")
@@ -120,43 +133,57 @@ def validate_text(text: str) -> str:
     return text
 
 
+# Check whether the selected summary option is valid
 def validate_summary_choice(choice: str) -> bool:
     return choice in SUMMARY_OPTIONS
 
 
+# Display basic application information
 def display_application_info() -> None:
     print_header("AI TEXT SUMMARIZATION SYSTEM")
 
     print_message("Model: " + MODEL_NAME, Colors.CYAN)
+
     print_message(
         f"Maximum Input Tokens: {MAX_INPUT_TOKENS}",
         Colors.CYAN
     )
+
     print_message(
         "Framework: Hugging Face Transformers",
         Colors.CYAN
     )
+
     print_message(
         "Status: Ready for summarization",
         Colors.GREEN
     )
 
 
+# Configure the terminal for colored output
 def configure_terminal() -> None:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
 
+    # Enable ANSI colors on Windows
     if os.name == "nt":
         os.system("")
 
 
+# Main function to run the application
 def main() -> None:
     configure_terminal()
+
+    # Display application information
     display_application_info()
+
+    # Show available summary options
     display_summary_options()
+
+    # Confirm that configuration is loaded
     print_success("Configuration loaded successfully.")
 
 
+# Run the application
 if __name__ == "__main__":
     main()
-```
